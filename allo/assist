@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+set -euo pipefail
+IFS=$'\n\t'
+
+HERE=`dirname $0`
+LUAJIT="$HERE/deps/luajit-bin/luajit"
+
+do_help () {
+    echo "Usage: assist <verb>"
+    echo "Verbs:"
+    echo "    fetch"
+    echo "        Download the version of dependencies indicated in lockfiles"
+    echo "    upgrade"
+    echo "        Figures out what the latest version of all dependencies is, upgrades"
+    echo "        the lockfiles, and then does a fetch of them."
+    echo "    run <url>"
+    echo "        Runs your alloapp and connects it to <url>"
+    exit
+}
+
+do_upgrade () {
+    echo "Upgrading allonet..."
+    # https://github.com/alloverse/allovisor-unity/blob/master/Assets/Code/Editor/AlloVisorBuild.cs
+    curl -fsSL "https://dev.azure.com/alloverse/allonet/_apis/build/builds?api-version=5.0&branchName=refs/heads/main&statusFilter=completed&resultFilter=succeeded" > $HERE/builds.json
+    $LUAJIT $HERE/assist.lua $HERE create-lock
+}
+
+do_fetch () {
+    echo "Fetching allonet..."
+    mkdir -p $HERE/lib/osx64 $HERE/lib/win64 $HERE/lib/linux64
+    $LUAJIT $HERE/assist.lua $HERE fetch $(cat $HERE/allonet.lock)
+}
+
+do_run () {
+    $LUAJIT $HERE/boot.lua $HERE/.. $*
+}
+
+if [ "$#" -lt 1 ]; then
+    do_help
+    exit
+fi
+
+case $1 in
+    upgrade )
+        do_upgrade
+        do_fetch
+    ;;
+    fetch )
+        do_fetch
+    ;;
+    run )
+        if [ "$#" -lt 2 ]; then
+            do_help
+            exit
+        fi
+        do_run "${@:2}"
+    ;;
+    * )
+        do_help
+    ;;
+esac

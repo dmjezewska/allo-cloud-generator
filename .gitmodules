@@ -1,0 +1,6 @@
+[submodule "allo/deps/alloui"]
+	path = allo/deps/alloui
+	url = https://github.com/alloverse/alloui-lua
+[submodule "allo/deps/luajit-bin"]
+	path = allo/deps/luajit-bin
+	url = https://github.com/luapower/luajit.git
