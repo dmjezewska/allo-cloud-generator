@@ -20,19 +20,18 @@ do_help () {
 
 do_upgrade () {
     echo "Upgrading allonet..."
-    # https://github.com/alloverse/allovisor-unity/blob/master/Assets/Code/Editor/AlloVisorBuild.cs
-    curl -fsSL "https://dev.azure.com/alloverse/allonet/_apis/build/builds?api-version=5.0&branchName=refs/heads/main&statusFilter=completed&resultFilter=succeeded" > $HERE/builds.json
-    $LUAJIT $HERE/assist.lua $HERE create-lock
+    mkdir -p "$HERE/lib"
+    $LUAJIT "$HERE/assist.lua" "$HERE" upgrade "${1-}"
 }
 
 do_fetch () {
     echo "Fetching allonet..."
-    mkdir -p $HERE/lib/osx64 $HERE/lib/win64 $HERE/lib/linux64
-    $LUAJIT $HERE/assist.lua $HERE fetch $(cat $HERE/allonet.lock)
+    mkdir -p "$HERE/lib"
+    $LUAJIT "$HERE/assist.lua" "$HERE" fetch
 }
 
 do_run () {
-    $LUAJIT $HERE/boot.lua $HERE/.. $*
+    $LUAJIT "$HERE/boot.lua" "$HERE/.." $*
 }
 
 if [ "$#" -lt 1 ]; then
@@ -42,8 +41,7 @@ fi
 
 case $1 in
     upgrade )
-        do_upgrade
-        do_fetch
+        do_upgrade ${2-}
     ;;
     fetch )
         do_fetch
