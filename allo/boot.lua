@@ -19,11 +19,11 @@ function os.uname()
 end
 
 if os.uname():find("^Darwin") ~= nil then
-    package.cpath = package.cpath..";"..libDir.."/osx64/?.dylib"
+    package.cpath = package.cpath..";"..libDir.."/?.dylib"
 elseif string.match(package.cpath, "so") then
-    package.cpath = package.cpath..";"..libDir.."/linux64/?.so"
+    package.cpath = package.cpath..";"..libDir.."/?.so"
 elseif string.match(package.cpath, "dll") then
-    package.cpath = package.cpath..";"..libDir.."/win64/?.dll"
+    package.cpath = package.cpath..";"..libDir.."/?.dll"
 end
 
 package.path = package.path
