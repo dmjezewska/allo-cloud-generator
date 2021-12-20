@@ -21,7 +21,7 @@ local s3_root = "http://alloverse-downloads-prod.s3-eu-north-1.amazonaws.com/all
 --- Check lock file and download binaries for that version
 -- If lockfile is empty do upgrade
 function fetch(version)
-    version = version or get_current_version() or get_latest_version()
+    version = version or get_locked_version()
     if not version then 
         return print("Could not determine version to fetch")
     end
